@@ -37,6 +37,7 @@ import cgi
 import hashlib
 import time
 import urllib
+import urllib2
 
 # Find a JSON parser
 try:
@@ -168,8 +169,11 @@ class GraphAPI(object):
             else:
                 args["access_token"] = self.access_token
         post_data = None if post_args is None else urllib.urlencode(post_args)
-        file = urllib.urlopen("https://graph.facebook.com/" + path + "?" +
-                              urllib.urlencode(args), post_data)
+        try:
+            file = urllib2.urlopen("https://graph.facebook.com/" + path + "?" +
+                                  urllib.urlencode(args), post_data)
+        except urllib2.HTTPError,e:
+            file = e
         try:
             response = _parse_json(file.read())
         finally:
